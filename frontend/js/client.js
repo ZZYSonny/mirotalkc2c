@@ -272,6 +272,11 @@ function handleCodec(peerConnection) {
     );
     console.log("Codecs:", videoCodecs);
     videoTransceiver.setCodecPreferences(videoCodecs);
+
+    let videoSender = videoTransceiver.sender;
+    let videoParam = videoSender.getParameters();
+    videoParam.encodings[0].maxBitrate = 8 * 1000 * 1000;
+    videoSender.setParameters(videoParam);
 }
 
 function handleAddPeer(config) {
