@@ -264,6 +264,16 @@ function handleServerInfo(config) {
     redirectURL = config.redirectURL;
 }
 
+function handleCodec(peerConnection) {
+    let videoTransceiver = peerConnection.getTransceivers().find((s) => (s.sender.track ? s.sender.track.kind === 'video' : false));
+    let videoCodecs = Array.prototype.concat(
+        RTCRtpSender.getCapabilities("video").codecs.filter((x) => x.mimeType == "video/AV1"),
+        RTCRtpSender.getCapabilities("video").codecs.filter((x) => x.mimeType == "video/VP9")
+    );
+    console.log("Codecs:", videoCodecs);
+    videoTransceiver.setCodecPreferences(videoCodecs);
+}
+
 function handleAddPeer(config) {
     if (roomPeersCount > 2) {
         return roomIsBusy();
@@ -375,6 +385,7 @@ function handleAddTracks(peerId) {
 function handleRtcOffer(peerId) {
     peerConnections[peerId].onnegotiationneeded = () => {
         console.log('Creating RTC offer to', peerId);
+        handleCodec(peerConnections[peerId]);
         peerConnections[peerId]
             .createOffer()
             .then((localDescription) => {
@@ -408,6 +419,7 @@ function handleSessionDescription(config) {
             console.log('Set remote description done!');
             if (sessionDescription.type == 'offer') {
                 console.log('Creating answer');
+                handleCodec(peerConnections[peerId]);
                 peerConnections[peerId]
                     .createAnswer()
                     .then((localDescription) => {
