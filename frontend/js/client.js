@@ -297,7 +297,9 @@ function getVideoState(peerConnection) {
 }
 
 function handleCodec(peerConnection) {
-    if (config.videoSenderCodec === 'default') return;
+    if (config.videoSenderCodec === 'default') {
+        config.videoSenderCodec = "AV1/VP9";
+    }
 
     try {
         const videoTransceiver = peerConnection
@@ -358,10 +360,8 @@ async function refreshBitrate() {
                 const videoSender = videoTransceiver.sender;
                 const videoParameters = await videoSender.getParameters();
                 if (config.videoSenderMaxBitrate === 'default'){
-                    if (videoParameters.encodings[0].hasOwnProperty("maxBitrate")) {
-                        delete videoParameters.encodings[0].maxBitrate;
-                    }
-                } else {
+                    config.videoSenderMaxBitrate = "8";
+                }  {
                     const newMaxBitrate = parseInt(config.videoSenderMaxBitrate) * 1000000;
                     videoParameters.encodings[0].maxBitrate = newMaxBitrate;
                 }
