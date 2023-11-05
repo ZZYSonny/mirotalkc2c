@@ -395,7 +395,10 @@ function handleAddPeer(config) {
     elemDisplay(buttonsBar, true);
     animateCSS(buttonsBar, 'fadeInUp');
 
-    peerConnection = new RTCPeerConnection({ iceServers: iceServers });
+    peerConnection = new RTCPeerConnection({ 
+        iceServers: iceServers,
+        iceTransportPolicy: "relay"
+    });
     peerConnections[peerId] = peerConnection;
 
     handlePeersConnectionStatus(peerId);
